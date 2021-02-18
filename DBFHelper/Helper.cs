@@ -73,6 +73,7 @@ namespace DBFHelper
             if (dateLastUpdate >= GetVersionDate(typeData).GetValueOrDefault((DateTime)SqlDateTime.MinValue))
                 return;
             var load = false;
+
             switch (typeData)
             {
                 case TypeData.FiasDbf:
