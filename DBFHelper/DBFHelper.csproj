@@ -48,12 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FindHelper.cs" />
     <Compile Include="Connected Services\FIASService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Enums.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="KLADR\ALTNAMES.cs" />
+    <Compile Include="KLADR\BaseKLADR.cs" />
+    <Compile Include="KLADR\DOMA.cs" />
+    <Compile Include="KLADR\FLAT.cs" />
+    <Compile Include="KLADR\KLADR.cs" />
+    <Compile Include="KLADR\KLADROBJECT.cs" />
+    <Compile Include="KLADR\NAMEMAP.cs" />
+    <Compile Include="KLADR\SOCRBASE.cs" />
+    <Compile Include="KLADR\STREET.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader.cs" />
   </ItemGroup>
@@ -85,6 +96,9 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FIAS\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

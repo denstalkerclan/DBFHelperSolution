@@ -1,9 +1,7 @@
 ﻿using DBFHelper;
+using DBFHelper.Enums;
+using DBFHelper.KLADR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DBHelperTest
 {
