@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace DBFHelper.KLADR
 {
-    public class DOMA : BaseKLADR
+    /// <summary>
+    /// объекты 6-го уровня классификации (номера домов, улиц, городов и населённых пунктов)
+    /// </summary>
+    public class DOMA : STREET
     {
-        public string NAME { get; set; }
+        /// <summary>
+        /// Корпус дома
+        /// </summary>
         public string KORP { get; set; }
-        public string SOCR { get; set; }
-        public string INDEX { get; set; }
-        public string GNINMB { get; set; }
-        public string UNO { get; set; }
-        public string OCATD { get; set; }
+
+        public override bool IsActual => CODE?.Length == 19;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace System.IO
 {
@@ -64,23 +66,29 @@ namespace System.IO
             byte[] backlink = reader.ReadBytes(263);
         }
 
+        private List<T[]> Split<T>(IEnumerable<T> source, int parts)
+        {
+            int i = 0;
+            return (from item in source
+                    group item by i++ % parts into part
+                    select part.ToArray()).ToList();
+        }
+                                                       
         private void ReadRecords()
         {
-            records = new List<Dictionary<DBFFieldDescriptor, object>>();
+            records = new ConcurrentBag<Dictionary<DBFFieldDescriptor, object>>();
 
             // Skip back to the end of the header. 
             reader.BaseStream.Seek(header.HeaderLenght, SeekOrigin.Begin);
-            for (int i = 0; i < header.NumberOfRecords; i++)
+            var rows = new List<byte[]>();
+            for (var i = 0; i < header.NumberOfRecords; i++)
+                rows.Add(reader.ReadBytes(header.RecordLenght));
+            rows.AsParallel().WithDegreeOfParallelism(4).ForAll(row =>
             {
-                if (reader.PeekChar() == '*') // DELETED
-                {
-                    continue;
-                }
+                if (Convert.ToChar(row[0]) == '*') { return; } // DELETED 
 
                 var record = new Dictionary<DBFFieldDescriptor, object>();
-                var row = reader.ReadBytes(header.RecordLenght);
-
-                foreach (var field in fields)
+                foreach (var field in fields.ToList())
                 {
                     byte[] buffer = new byte[field.FieldLength];
                     Array.Copy(row, field.Address, buffer, 0, field.FieldLength);
@@ -227,9 +235,8 @@ namespace System.IO
                             break;
                     }
                 }
-
                 records.Add(record);
-            }
+            });
         }
 
         public DataTable ReadToDataTable()
@@ -266,23 +273,24 @@ namespace System.IO
             return records.Select(record => record.ToDictionary(r => r.Key.FieldName, r => r.Value)).ToList();
         }
 
-        public IEnumerable<T> ReadToObject<T>()
+        public List<T> ReadToObject<T>()
             where T : new()
         {
             ReadRecords();
 
-            var type = typeof(T);
+            var props = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+                .ToDictionary(x => x.Name, x => x);
             var list = new List<T>();
 
             foreach (var record in records)
             {
                 T item = new T();
-                foreach (var pair in record.Select(s => new { Key = s.Key.FieldName, Value = s.Value }))
+                foreach (var pair in record)
                 {
-                    var property = type.GetProperty(pair.Key, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                    var property = props.ContainsKey(pair.Key.FieldName) ? props[pair.Key.FieldName] : null;
                     if (property != null)
                     {
-                        if (property.PropertyType == pair.Value.GetType())
+                        if (property.PropertyType == pair.Value?.GetType())
                         {
                             property.SetValue(item, pair.Value, null);
                         }
@@ -290,7 +298,7 @@ namespace System.IO
                         {
                             if (pair.Value != DBNull.Value)
                             {
-                                property.SetValue(item, System.Convert.ChangeType(pair.Value, property.PropertyType), null);
+                                property.SetValue(item, Convert.ChangeType(pair.Value, property.PropertyType), null);
                             }
                         }
                     }
@@ -303,8 +311,7 @@ namespace System.IO
 
         private DBFHeader header;
         private List<DBFFieldDescriptor> fields = new List<DBFFieldDescriptor>();
-
-        private List<Dictionary<DBFFieldDescriptor, object>> records = new List<Dictionary<DBFFieldDescriptor, object>>();
+        private ConcurrentBag<Dictionary<DBFFieldDescriptor, object>> records = new ConcurrentBag<Dictionary<DBFFieldDescriptor, object>>();
 
         #region IDisposable
 

@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 
 namespace DBFHelper.KLADR
 {
+    /// <summary>
+    /// объекты 5-го уровня классификации (улицы городов и населённых пунктов)
+    /// </summary>
     public class STREET : BaseKLADR
     {
-        public string NAME { get; set; }
+        /// <summary>
+        /// Сокращенное наименование
+        /// </summary>
         public string SOCR { get; set; }
-        public string INDEX { get; set; }
-        public string GNINMB { get; set; }
-        public string UNO { get; set; }
+        /// <summary>
+        /// Код ОКАТО
+        /// </summary>
         public string OCATD { get; set; }
+
+        public override bool IsActual => CODE?.Length == 15 && CODE.EndsWith("00");
     }
 }

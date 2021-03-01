@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace DBFHelper.KLADR
 {
+    /// <summary>
+    /// объекты 7-го уровня классификации (номера квартир домов)
+    /// </summary>
     public class FLAT : BaseKLADR
     {
+        /// <summary>
+        /// Номер подъезда дома 
+        /// </summary>
         public string NP { get; set; }
-        public string GNINMB { get; set; }
-        public string NAME { get; set; }
-        public string INDEX { get; set; }
-        public string UNO { get; set; }
+
+        public override bool IsActual => CODE?.Length == 23;
     }
 }

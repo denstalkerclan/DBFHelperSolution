@@ -90,8 +90,9 @@ namespace DBFHelper
             }
             if (load)
             {
-                Trace.TraceInformation($"GetData: load");
+                Trace.TraceInformation($"{DateTime.Now} GetData: load begin");
                 ReadDBF(_outputDirectory);
+                Trace.TraceInformation($"{DateTime.Now} GetData: load end");
             }
             else
                 Trace.TraceInformation($"GetData: not load");
@@ -253,7 +254,6 @@ namespace DBFHelper
                             list = dbf.ReadToObject<STREET>();
                             break;
                     }
-
                     Results.AddOrUpdate(Path.GetFileNameWithoutExtension(file), list, (x, y) => y = list);
                 }
             });
@@ -262,7 +262,7 @@ namespace DBFHelper
         public IEnumerable<T> GetListObject<T>()
         {
             var name = typeof(T).Name;
-            return Results.ContainsKey(name)?Results[name].OfType<T>() : new List<T>();
+            return Results.ContainsKey(name) ? Results[name].OfType<T>() : new List<T>();
         }
 
 

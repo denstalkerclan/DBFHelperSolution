@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DBFHelper.KLADR
 {
+    /// <summary>
+    /// Базовый класс КЛАДР
+    /// </summary>
     public abstract class BaseKLADR
     {
         /*СС+РРР+ГГГ+ППП+СССС+УУУУ+ДДДД(или ЗЗЗЗ)+ОООО, где:
@@ -25,7 +28,29 @@ namespace DBFHelper.KLADR
             Childs = new List<BaseKLADR>();
         }
 
+        /// <summary>
+        /// Наименование
+        /// </summary>
+        public string NAME { get; set; }
+        /// <summary>
+        /// Код
+        /// </summary>
         public string CODE { get; set; }
+        /// <summary>
+        /// Почтовый индекс
+        /// </summary>
+        public string INDEX { get; set; }
+        /// <summary>
+        /// Код ИФНС
+        /// </summary>
+        public string GNINMB { get; set; }
+        /// <summary>
+        /// Код территориального участка ИФНС
+        /// </summary>
+        public string UNO { get; set; }
+
+        public abstract bool IsActual { get; }
+
         public int REGION
         {
             get
