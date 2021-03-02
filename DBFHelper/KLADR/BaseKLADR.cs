@@ -49,6 +49,9 @@ namespace DBFHelper.KLADR
         /// </summary>
         public string UNO { get; set; }
 
+        /// <summary>
+        /// Актуальность записи
+        /// </summary>
         public abstract bool IsActual { get; }
 
         public int REGION

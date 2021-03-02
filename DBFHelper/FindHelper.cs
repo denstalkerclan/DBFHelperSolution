@@ -13,6 +13,13 @@ namespace DBFHelper
         TSource2 Source2 { get; set; }
     }
 
+    public class ObjectPair<TSource1, TSource2, TKey> : IObjectPair<TSource1, TSource2, TKey>
+    {
+        public TKey Key { get; set; }
+        public TSource1 Source1 { get; set; }
+        public TSource2 Source2 { get; set; }
+    }
+
     public static class FindHelper
     {
         public static List<TObjectPair> FindEquals<TObjectPair, TSource1, TSource2, TKey>(
