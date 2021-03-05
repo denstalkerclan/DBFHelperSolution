@@ -20,6 +20,6 @@ namespace DBFHelper.KLADR
         /// </summary>
         public string OCATD { get; set; }
 
-        public override bool IsActual => CODE?.Length == 15 && CODE.EndsWith("00");
+        public override bool IsActual => CODE?.Length == 17 && CODE.EndsWith("00");
     }
 }

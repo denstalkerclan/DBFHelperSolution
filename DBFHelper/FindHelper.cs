@@ -15,11 +15,6 @@ namespace DBFHelper
 
     public class ObjectPair<TSource1, TSource2, TKey> : IObjectPair<TSource1, TSource2, TKey>
     {
-        public ObjectPair()
-        {
-
-        }
-
         public TKey Key { get; set; }
         public TSource1 Source1 { get; set; }
         public TSource2 Source2 { get; set; }

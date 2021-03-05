@@ -43,9 +43,6 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SevenZipExtractor, Version=1.0.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SevenZipExtractor.1.0.15\lib\net45\SevenZipExtractor.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -110,6 +107,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FIAS\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor.csproj">
+      <Project>{06d35b99-681f-4de0-ab3c-6c10955c0a4f}</Project>
+      <Name>SevenZipExtractor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
