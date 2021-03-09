@@ -219,6 +219,7 @@ namespace DBFHelper
             {
                 archiveFile.Extract(dirPath);
             }
+            File.Delete(name);
         }
 
         private void ReadDBF(string name)
@@ -256,6 +257,7 @@ namespace DBFHelper
                     }
                     Results.AddOrUpdate(Path.GetFileNameWithoutExtension(file), list, (x, y) => y = list);
                 }
+                File.Delete(file);
             });
         }
 
