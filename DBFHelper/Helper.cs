@@ -66,14 +66,14 @@ namespace DBFHelper
                 return null;
         }
 
-        public void GetData(DateTime dateLastUpdate, TypeData typeData)
+        public bool GetData(DateTime dateLastUpdate, TypeData typeData)
         {
             Trace.TraceInformation($"GetData: {dateLastUpdate.ToShortDateString()} {typeData.ToString()}");
             if (!_init)
                 Init();
 
             if (dateLastUpdate >= GetVersionDate(typeData).GetValueOrDefault((DateTime)SqlDateTime.MinValue))
-                return;
+                return false;
             var load = false;
 
             switch (typeData)
@@ -96,6 +96,8 @@ namespace DBFHelper
             }
             else
                 Trace.TraceInformation($"GetData: not load");
+
+            return load;
         }
 
         private string GetTempDir()
@@ -191,7 +193,7 @@ namespace DBFHelper
             {
 
                 if (File.Exists(file))
-                    return true;
+                    File.Delete(file);
                 using (WebClient wc = new WebClient())
                 {
                     wc.DownloadFile(uri, file);
