@@ -66,15 +66,15 @@ namespace DBFHelper
                 return null;
         }
 
-        public bool GetData(DateTime dateLastUpdate, TypeData typeData)
+        public string GetData(DateTime dateLastUpdate, TypeData typeData)
         {
             Trace.TraceInformation($"GetData: {dateLastUpdate.ToShortDateString()} {typeData.ToString()}");
             if (!_init)
                 Init();
 
             if (dateLastUpdate >= GetVersionDate(typeData).GetValueOrDefault((DateTime)SqlDateTime.MinValue))
-                return false;
-            var load = false;
+                return "Нет новых данных";
+            string load = "";
 
             switch (typeData)
             {
@@ -88,7 +88,7 @@ namespace DBFHelper
                     load = LoadFullKLADR(GetVersionDate(typeData).GetValueOrDefault(DateTime.Today), typeData);
                     break;
             }
-            if (load)
+            if (string.IsNullOrEmpty(load))
             {
                 Trace.TraceInformation($"{DateTime.Now} GetData: load begin");
                 ReadDBF(_outputDirectory);
@@ -127,67 +127,73 @@ namespace DBFHelper
             return _outputDirectory;
         }
 
-        private bool LoadFullKLADR(DateTime dateLoad, TypeData typeData)
+        private string LoadFullKLADR(DateTime dateLoad, TypeData typeData)
         {
             try
             {
                 var name = GetTempFileName(dateLoad, typeData, true);
                 var info = AllInfoObject.Where(x => !string.IsNullOrEmpty(x.Kladr47ZUrl)).OrderBy(x => DateTime.Parse(x.Date)).LastOrDefault();
-                if (DownloadFile(info.Kladr47ZUrl, name))
+                var res = DownloadFile(info.Kladr47ZUrl, name);
+                if (string.IsNullOrEmpty(res))
                 {
                     UnZip(name);
-                    return true;
+                    return string.Empty;
                 }
+                else
+                    return res;
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
+                return ex.ToString();
             }
-
-            return false;
         }
 
-        private bool LoadFullFIAS(DateTime dateLoad, TypeData typeData)
+        private string LoadFullFIAS(DateTime dateLoad, TypeData typeData)
         {
             try
             {
                 var name = GetTempFileName(dateLoad, typeData, true);
                 var info = AllInfoObject.Where(x => !string.IsNullOrEmpty(x.FiasCompleteDbfUrl)).OrderByDescending(x => DateTime.Parse(x.Date)).LastOrDefault();
-                if (DownloadFile(info.FiasCompleteDbfUrl, name))
+                var res = DownloadFile(info.FiasCompleteDbfUrl, name);
+                if (string.IsNullOrEmpty(res))
                 {
                     UnZip(name);
-                    return true;
+                    return string.Empty;
                 }
+                else
+                    return res;
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
+                return ex.ToString();
             }
-
-            return false;
         }
 
-        private bool LoadDifFIAS(DateTime dateLastUpdate, TypeData typeData)
+        private string LoadDifFIAS(DateTime dateLastUpdate, TypeData typeData)
         {
             try
             {
                 var name = GetTempFileName(dateLastUpdate, typeData, false);
                 var info = AllInfoObject.Where(x => !string.IsNullOrEmpty(x.FiasDeltaDbfUrl)).OrderByDescending(x => DateTime.Parse(x.Date)).LastOrDefault();
-                if (DownloadFile(info.FiasDeltaDbfUrl, name))
+                var res = DownloadFile(info.FiasDeltaDbfUrl, name);
+                if (string.IsNullOrEmpty(res))
                 {
                     UnZip(name);
-                    return true;
+                    return string.Empty;
                 }
+                else
+                    return res;
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
+                return ex.ToString();
             }
-
-            return false;
         }
 
-        private bool DownloadFile(string uri, string file)
+        private string DownloadFile(string uri, string file)
         {
             try
             {
@@ -197,13 +203,13 @@ namespace DBFHelper
                 using (WebClient wc = new WebClient())
                 {
                     wc.DownloadFile(uri, file);
-                    return true;
+                    return string.Empty;
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
-                return false;
+                return ex.ToString();
             }
         }
 
@@ -268,8 +274,6 @@ namespace DBFHelper
             var name = typeof(T).Name;
             return Results.ContainsKey(name) ? Results[name].OfType<T>() : new List<T>();
         }
-
-
     }
 
     public class FileItem
