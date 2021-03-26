@@ -25,6 +25,8 @@ namespace DBFHelper
         private string _outputDirectory;
         public ConcurrentDictionary<string, IEnumerable<object>> Results = new ConcurrentDictionary<string, IEnumerable<object>>();
 
+        public string History = string.Empty; 
+
         public Helper(string url)
         {
             _url = url;
@@ -71,7 +73,7 @@ namespace DBFHelper
             Trace.TraceInformation($"GetData: {dateLastUpdate.ToShortDateString()} {typeData.ToString()}");
             if (!_init)
                 Init();
-
+            History += "Поиск новых данных на дату " + dateLastUpdate.ToShortDateString();
             if (dateLastUpdate >= GetVersionDate(typeData).GetValueOrDefault((DateTime)SqlDateTime.MinValue))
                 return "Нет новых данных";
             string load = "";
@@ -102,7 +104,7 @@ namespace DBFHelper
 
         private string GetTempDir()
         {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Templates), "LoadKLADR");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LoadKLADR");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
@@ -197,7 +199,7 @@ namespace DBFHelper
         {
             try
             {
-
+                History += "Скачивание нового архива из "+ uri + " в " + file;
                 if (File.Exists(file))
                     File.Delete(file);
                 using (WebClient wc = new WebClient())
@@ -217,6 +219,7 @@ namespace DBFHelper
         {
             Trace.TraceInformation($"UnZip: {name}");
             var dirPath = GetDirectoryUnZip(name);
+            History += "Распаковка нового архива " + name + " в " + dirPath;
 
             if (Directory.Exists(dirPath))
                 Directory.Delete(dirPath, true);
